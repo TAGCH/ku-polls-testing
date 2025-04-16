@@ -2,3 +2,4 @@
 Django >= 5.1, <5.2
 python-decouple
 psycopg[binary]
+selenium>=4.0
