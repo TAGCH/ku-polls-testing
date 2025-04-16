@@ -12,6 +12,7 @@ class PollTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--incognito")
         chrome_options.add_argument("--start-maximized")
         cls.driver = webdriver.Chrome(options=chrome_options)
