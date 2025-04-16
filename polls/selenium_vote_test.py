@@ -28,6 +28,8 @@ class PollTests(unittest.TestCase):
     def test_vote_without_login(self):
         """Test voting without login in should redirect to the login page."""
         try:
+            self.logout_if_logged_in()
+
             question_link = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[href="/polls/3/"]'))
             )
@@ -230,6 +232,19 @@ class PollTests(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"Test failed: {e}")
+
+    def logout_if_logged_in(self):
+        try:
+            logout_button = WebDriverWait(self.driver, 3).until(
+                EC.element_to_be_clickable((By.XPATH, '//button[text()="Logout"]'))
+            )
+            logout_button.click()
+            time.sleep(1)
+            alert = WebDriverWait(self.driver, 3).until(EC.alert_is_present())
+            alert.accept()
+            time.sleep(1)
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     unittest.main()
