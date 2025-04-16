@@ -1,0 +1,17 @@
+.git
+.venv
+venv
+.github
+settings.ini
+*.sh
+*.ps1
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.git
+*.gitignore
+*.env

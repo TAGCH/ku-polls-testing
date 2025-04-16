@@ -1,0 +1,4 @@
+# Packages required by this application
+Django >= 5.1, <5.2
+python-decouple
+psycopg[binary]
