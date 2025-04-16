@@ -15,6 +15,8 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_future_question(self):
         """
+        BC_QUES_001:
+
         was_published_recently() returns False for questions whose pub_date
         is in the future.
         """
@@ -24,6 +26,8 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_old_question(self):
         """
+        BC_QUES_001:
+
         was_published_recently() returns False for questions whose pub_date
         is older than 1 day.
         """
@@ -33,6 +37,8 @@ class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_recent_question(self):
         """
+        BC_QUES_001:
+
         was_published_recently() returns True for questions whose pub_date
         is within the last day.
         """
@@ -43,28 +49,47 @@ class QuestionModelTests(TestCase):
         self.assertIs(recent_question.was_published_recently(), True)
 
     def test_is_published_with_future_question(self):
-        """is_published() should return False for questions with a future pub_date."""
+        """
+        BC_QUES_002:
+
+        is_published() should return False for questions with a future
+        pub_date.
+        """
         future_question = create_question(
             question_text="Future question.", days=5
             )
         self.assertIs(future_question.is_published(), False)
 
     def test_is_published_with_default_pub_date(self):
-        """is_published() should return True for questions with the default pub_date (now)."""
+        """
+        BC_QUES_003:
+
+        is_published() should return True for questions with the default
+        pub_date (now).
+        """
         question = create_question(
             question_text="Default pub_date question.", days=0
             )
         self.assertIs(question.is_published(), True)
 
     def test_is_published_with_past_question(self):
-        """is_published() should return True for questions with a past pub_date."""
+        """
+        BC_QUES_003:
+
+        is_published() should return True for questions with a past
+        pub_date.
+        """
         past_question = create_question(
             question_text="Past question.", days=-5
             )
         self.assertIs(past_question.is_published(), True)
 
     def test_cannot_vote_before_pub_date(self):
-        """Cannot vote if the pub_date is in the future."""
+        """
+        BC_QUES_006:
+
+        Cannot vote if the pub_date is in the future.
+        """
         future_question = create_question(
             question_text="Future question.", days=5
             )
@@ -73,7 +98,11 @@ class QuestionModelTests(TestCase):
         self.assertIs(future_question.can_vote(), False)
 
     def test_can_vote_within_voting_period(self):
-        """Can vote if the current time is between pub_date and end_date."""
+        """
+        BC_QUES_007:
+
+        Can vote if the current time is between pub_date and end_date.
+        """
         question = create_question(
             question_text="Active voting period question.", days=-1
             )
@@ -82,7 +111,11 @@ class QuestionModelTests(TestCase):
         self.assertIs(question.can_vote(), True)
 
     def test_cannot_vote_after_end_date(self):
-        """Cannot vote if the end_date is in the past."""
+        """
+        BC_QUES_008:
+
+        Cannot vote if the end_date is in the past.
+        """
         question = create_question(
             question_text="Ended voting period question.", days=-10
             )
@@ -91,7 +124,11 @@ class QuestionModelTests(TestCase):
         self.assertIs(question.can_vote(), False)
 
     def test_can_vote_with_no_end_date(self):
-        """Voting is allowed if there is no end_date specified."""
+        """
+        BC_QUES_009:
+
+        Voting is allowed if there is no end_date specified.
+        """
         question = create_question(
             question_text="No end date question.", days=-1
             )
@@ -114,14 +151,22 @@ class QuestionIndexViewTests(TestCase):
     """Test The Index View."""
 
     def test_no_questions(self):
-        """If no questions exist, an appropriate message is displayed."""
+        """
+        BC_QUES_002:
+
+        If no questions exist, an appropriate message is displayed.
+        """
         response = self.client.get(reverse('polls:index'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No polls are available.")
         self.assertEqual(list(response.context['latest_question_list']), [])
 
     def test_past_question(self):
-        """Questions with a pub_date in the past are displayed on the index page."""
+        """
+        BC_QUES_003:
+
+        Questions with a pub_date in the past are displayed on the index page.
+        """
         question = create_question(question_text="Past question.", days=-30)
         response = self.client.get(reverse('polls:index'))
         self.assertEqual(
@@ -129,14 +174,22 @@ class QuestionIndexViewTests(TestCase):
             )
 
     def test_future_question(self):
-        """Questions with a pub_date in the future aren't displayed on the index page."""
+        """
+        BC_QUES_002:
+
+        Questions with a pub_date in the future aren't displayed on the index page.
+        """
         create_question(question_text="Future question.", days=30)
         response = self.client.get(reverse('polls:index'))
         self.assertContains(response, "No polls are available.")
         self.assertEqual(list(response.context['latest_question_list']), [])
 
     def test_future_question_and_past_question(self):
-        """Even if both past and future questions exist, only past questions are displayed."""
+        """
+        BC_QUES_002 & BC_QUES_003:
+
+        Even if both past and future questions exist, only past questions are displayed.
+        """
         question = create_question(question_text="Past question.", days=-30)
         create_question(question_text="Future question.", days=30)
         response = self.client.get(reverse('polls:index'))
@@ -145,7 +198,11 @@ class QuestionIndexViewTests(TestCase):
             )
 
     def test_two_past_questions(self):
-        """The questions index page may display multiple questions."""
+        """
+        BC_QUES_003:
+
+        The questions index page may display multiple questions.
+        """
         question1 = create_question(question_text="Past question 1.", days=-30)
         question2 = create_question(question_text="Past question 2.", days=-5)
         response = self.client.get(reverse('polls:index'))
@@ -160,6 +217,8 @@ class QuestionDetailViewTests(TestCase):
 
     def test_future_question(self):
         """
+        BC_QUES_004:
+
         The detail view of a question with a pub_date in the future
         returns a 302.
         """
@@ -172,6 +231,8 @@ class QuestionDetailViewTests(TestCase):
 
     def test_past_question(self):
         """
+        BC_QUES_005:
+
         The detail view of a question with a pub_date in the past
         displays the question's text.
         """
@@ -193,7 +254,11 @@ class VoteViewTests(TestCase):
         self.choice = Choice.objects.create(question=self.question, choice_text="Choice 1")
 
     def test_vote_success(self):
-        """Test that a valid vote is recorded and redirected to results."""
+        """
+        BC_VOTE_001 & BC_QUES_007:
+
+        Test that a valid vote is recorded and redirected to results.
+        """
         self.client.login(username='testuser', password='12345')
         url = reverse('polls:vote', args=(self.question.id,))
         response = self.client.post(url, {'choice': self.choice.id})
@@ -202,7 +267,11 @@ class VoteViewTests(TestCase):
         self.assertEqual(Vote.objects.first().choice, self.choice)
 
     def test_vote_after_end_date(self):
-        """Attempting to vote after the question's end_date should fail."""
+        """
+        BC_VOTE_002 & BC_QUES_008:
+
+        Attempting to vote after the question's end_date should fail.
+        """
         past_question = create_question(question_text="Past Question", days=-10)
         past_question.end_date = timezone.now() - timezone.timedelta(days=1)
         past_question.save()
@@ -213,10 +282,27 @@ class VoteViewTests(TestCase):
         self.assertContains(response, "This poll is not allowed for voting.")
 
     def test_user_cannot_vote_multiple_times(self):
-        """A user should not be able to vote multiple times for the same question."""
+        """
+        BC_VOTE_003:
+
+        A user should not be able to vote multiple times for the same question.
+        """
         self.client.login(username='testuser', password='12345')
         url = reverse('polls:vote', args=(self.question.id,))
         self.client.post(url, {'choice': self.choice.id})
         response = self.client.post(url, {'choice': self.choice.id})
         self.assertEqual(response.status_code, 302)  # Should redirect
         self.assertEqual(Vote.objects.count(), 1)  # User should only have one vote for this question
+    
+    def test_unauthenticated_user_cannot_vote(self):
+        """
+        BC_VOTE_004:
+
+        Unauthenticated users should be redirected to the login page when trying to vote.
+        """
+        url = reverse('polls:vote', args=(self.question.id,))
+        response = self.client.post(url, {'choice': self.choice.id})
+        login_url = reverse('login')  # adjust if using a custom login route
+        self.assertRedirects(response, f'{login_url}?next={url}')
+        self.assertEqual(Vote.objects.count(), 0)
+

@@ -19,6 +19,12 @@ Running : run by typing this code in your terminal, cmd or powershell.
 python manage.py runserver
 ```
 
+## Running the Selenium test
+Running : run by typing this code in your terminal, cmd or powershell and change 'test_name' to the function that you need to test.
+```
+python -m unittest polls.selenium_vote_test.PollTests.test_name
+```
+
 ** Please make sure that your path is in the ku-polls directory.
 
 ## Demo Admin
